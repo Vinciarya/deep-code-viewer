@@ -17,13 +17,16 @@ const CodeInput: React.FC<CodeInputProps> = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        background: "black",
-        padding: "10px 40px 20px",
+        background: "var(--color-accent-dark)",
+        padding: "24px",
         borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        border: "1px solid var(--color-accent-primary)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
       }}
     >
-      <h2 style={{ marginTop: 0 }}>Code Input</h2>
+      <h2 style={{ marginTop: 0, color: "var(--color-heading)" }}>
+        Code Input
+      </h2>
       <textarea
         id="codeInput"
         name="code"
@@ -35,9 +38,12 @@ const CodeInput: React.FC<CodeInputProps> = ({
           width: "100%",
           fontFamily: "monospace",
           fontSize: "14px",
-          border: "1px solid #ddd",
-          borderRadius: "4px",
-          padding: "10px",
+          backgroundColor: "var(--color-background",
+          color: "var(--color-body-text)",
+          border: "1px solid var(--color-accent-primary)",
+          borderRadius: "6px",
+          padding: "12px",
+          boxSizing: "border-box",
         }}
       />
       <button
@@ -47,12 +53,13 @@ const CodeInput: React.FC<CodeInputProps> = ({
           marginTop: "15px",
           padding: "10px 20px",
           fontSize: "16px",
-          backgroundColor: "#007bff",
-          color: "white",
+          backgroundColor: "var(--color-accent-primary)",
+          color: "var(--color-heading)",
           border: "none",
           borderRadius: "5px",
           cursor: "pointer",
           alignSelf: "flex-start",
+          opacity: isLoading ? 0.6 : 1,
         }}
       >
         {isLoading ? "Analyzing..." : "Analyze Code"}

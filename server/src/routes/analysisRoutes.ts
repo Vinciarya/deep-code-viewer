@@ -1,5 +1,4 @@
 import {Router, Request, Response} from 'express';
-import {parseJsCode} from '../parser/jsParser';
 import * as parser from '@babel/parser';
 import { buildSymbolTable } from '../symbolTable';
 import { buildCallGraph } from '../callGraph';
