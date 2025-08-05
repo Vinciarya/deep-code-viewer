@@ -1,5 +1,4 @@
-// src/App.tsx
-import { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { analyzeCode, AnalysisResult } from "./services/analysisService";
 import CodeInput from "./components/CodeInput";
 import ResultsDisplay from "./components/ResultDisplay";
@@ -18,6 +17,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   const container = useRef(null);
+  const scrollPositionRef = useRef(0);
+  const activeElementRef = useRef<HTMLElement | null>(null);
 
   useGSAP(
     () => {
@@ -32,10 +33,13 @@ function App() {
     { scope: container }
   );
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    activeElementRef.current = event.currentTarget;
+    scrollPositionRef.current = window.scrollY;
+
     setIsLoading(true);
     setError(null);
-    setAnalysis(null);
+
     try {
       const result = await analyzeCode(code);
       setAnalysis(result);
@@ -45,6 +49,15 @@ function App() {
       setIsLoading(false);
     }
   };
+  useLayoutEffect(() => {
+    if (!isLoading && (analysis || error)) {
+      window.scrollTo({
+        top: scrollPositionRef.current,
+        behavior: "instant",
+      });
+      activeElementRef.current?.scrollIntoView();
+    }
+  }, [isLoading, analysis, error]);
 
   return (
     <div
@@ -69,12 +82,13 @@ function App() {
             onAnalyze={handleAnalyze}
             isLoading={isLoading}
           />
-
-          <ResultsDisplay
-            analysis={analysis}
-            error={error}
-            isLoading={isLoading}
-          />
+          <div className="min-h-[600px]">
+            <ResultsDisplay
+              analysis={analysis}
+              error={error}
+              isLoading={isLoading}
+            />
+          </div>
         </main>
       </div>
     </div>

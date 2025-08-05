@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Model } from "./Model";
 

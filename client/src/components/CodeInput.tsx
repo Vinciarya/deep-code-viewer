@@ -1,9 +1,11 @@
 import React, { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
 
 interface CodeInputProps {
   code: string;
   setCode: (code: string) => void;
-  onAnalyze: () => void;
+  onAnalyze: (event: React.MouseEvent<HTMLButtonElement>) => void;
   isLoading: boolean;
 }
 const CodeInput: React.FC<CodeInputProps> = ({
@@ -14,12 +16,34 @@ const CodeInput: React.FC<CodeInputProps> = ({
 }) => {
   const lineCounterRef = useRef<HTMLTextAreaElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleScroll = () => {
     if (lineCounterRef.current && codeEditorRef.current) {
       lineCounterRef.current.scrollTop = codeEditorRef.current.scrollTop;
     }
   };
+  useGSAP(
+    () => {
+      if (isLoading) {
+        gsap.to(buttonRef.current, {
+          scale: 1.05,
+          repeat: -1,
+          yoyo: true,
+          duration: 0.5,
+        });
+      } else {
+        gsap.to(buttonRef.current, {
+          scale: 1,
+          duration: 0.2,
+        });
+      }
+      return () => {
+        gsap.killTweensOf(buttonRef.current);
+      };
+    },
+    { dependencies: [isLoading] }
+  );
   const lineCount = code.split("\n").length;
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1).join(
     "\n"
@@ -85,14 +109,15 @@ const CodeInput: React.FC<CodeInputProps> = ({
             backgroundColor: "var(--color-background",
             color: "var(--color-body-text)",
             border: "1px solid var(--color-accent-primary)",
-            borderRadius: "6px",
+            borderRadius: "2px",
 
             boxSizing: "border-box",
           }}
         />
       </div>
       <button
-        onClick={onAnalyze}
+        ref={buttonRef}
+        onClick={(e) => onAnalyze(e)}
         disabled={isLoading}
         style={{
           marginTop: "15px",
