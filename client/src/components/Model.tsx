@@ -67,8 +67,8 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
         material.emissiveIntensity = 0.8;
       } else {
         material.color = new THREE.Color("#1a1a1a");
-        //material.metalness = 1.2;
-        //  material.roughness = 0.4;
+        material.metalness = 1.2;
+        material.roughness = 0.4;
 
         material.emissive = new THREE.Color("#000000");
         material.transparent = true;

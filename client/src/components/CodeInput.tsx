@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 interface CodeInputProps {
   code: string;
@@ -12,6 +12,19 @@ const CodeInput: React.FC<CodeInputProps> = ({
   onAnalyze,
   isLoading,
 }) => {
+  const lineCounterRef = useRef<HTMLTextAreaElement>(null);
+  const codeEditorRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleScroll = () => {
+    if (lineCounterRef.current && codeEditorRef.current) {
+      lineCounterRef.current.scrollTop = codeEditorRef.current.scrollTop;
+    }
+  };
+  const lineCount = code.split("\n").length;
+  const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1).join(
+    "\n"
+  );
+
   return (
     <div
       style={{
@@ -27,25 +40,57 @@ const CodeInput: React.FC<CodeInputProps> = ({
       <h2 style={{ marginTop: 0, color: "var(--color-heading)" }}>
         Code Input
       </h2>
-      <textarea
-        id="codeInput"
-        name="code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="Paste your JavaScript code here..."
-        rows={15}
+      <div
         style={{
+          display: "flex",
           width: "100%",
-          fontFamily: "monospace",
-          fontSize: "14px",
-          backgroundColor: "var(--color-background",
-          color: "var(--color-body-text)",
           border: "1px solid var(--color-accent-primary)",
           borderRadius: "6px",
-          padding: "12px",
-          boxSizing: "border-box",
+          minHeight: "300px",
         }}
-      />
+      >
+        <textarea
+          ref={lineCounterRef}
+          id="lineCounter"
+          name="lineNumbers"
+          value={lineNumbers}
+          readOnly
+          style={{
+            width: "20px",
+            textAlign: "right",
+            fontFamily: "monospace",
+            fontSize: "14px",
+            lineHeight: "1.3",
+            backgroundColor: "var(--color-background)",
+            color: "var(--color-body-text)",
+            border: "none",
+            padding: "12pxn 5px 12px 0",
+            borderRight: "1px solid var(--color-accent-primary)",
+            resize: "none",
+            outline: "none",
+            overflow: "hidden",
+          }}
+        />
+        <textarea
+          id="codeInput"
+          name="code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Paste your JavaScript code here..."
+          rows={15}
+          style={{
+            width: "100%",
+            fontFamily: "monospace",
+            fontSize: "14px",
+            backgroundColor: "var(--color-background",
+            color: "var(--color-body-text)",
+            border: "1px solid var(--color-accent-primary)",
+            borderRadius: "6px",
+
+            boxSizing: "border-box",
+          }}
+        />
+      </div>
       <button
         onClick={onAnalyze}
         disabled={isLoading}

@@ -17,16 +17,20 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useGSAP(() => {
-    const tl = gsap.timeline();
-    tl.from(".panel", {
-      y: 50,
-      opacity: 0,
-      stagger: 0.2,
-      duration: 0.8,
-      ease: "power3.inOut",
-    });
-  });
+  const container = useRef(null);
+
+  useGSAP(
+    () => {
+      gsap.from(".panel", {
+        y: 50,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: "power3.inOut",
+      });
+    },
+    { scope: container }
+  );
 
   const handleAnalyze = async () => {
     setIsLoading(true);
@@ -43,27 +47,36 @@ function App() {
   };
 
   return (
-    <div className="app-container ">
+    <div
+      className="app-container relative min-h-screen bg-gray-100 dark:bg-gray-900 font-sans "
+      ref={container}
+    >
       <ThreeCanvas />
-      <header className="app-header panel">
-        <h1>Deep Code Viewer</h1>
-        <p>Paste your code below to analyze its structure and dependencies.</p>
-      </header>
+      <div className="absolute inset-0 z-10 flex flex-col gap-6 p-8 ">
+        <header className="app-header panel">
+          <h1 className="text-3xl font-bold sm:text-7xl text-gray-800 dark:text-gray-100">
+            Deep Code Viewer
+          </h1>
+          <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">
+            Paste your code below to analyze its structure and dependencies.
+          </p>
+        </header>
 
-      <main className="main-content">
-        <CodeInput
-          code={code}
-          setCode={setCode}
-          onAnalyze={handleAnalyze}
-          isLoading={isLoading}
-        />
+        <main className=" w-full max-w-7xl flex flex-col gap-6">
+          <CodeInput
+            code={code}
+            setCode={setCode}
+            onAnalyze={handleAnalyze}
+            isLoading={isLoading}
+          />
 
-        <ResultsDisplay
-          analysis={analysis}
-          error={error}
-          isLoading={isLoading}
-        />
-      </main>
+          <ResultsDisplay
+            analysis={analysis}
+            error={error}
+            isLoading={isLoading}
+          />
+        </main>
+      </div>
     </div>
   );
 }

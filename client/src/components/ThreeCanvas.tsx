@@ -5,7 +5,7 @@ export function ThreeCanvas() {
   return (
     <Canvas
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 0,
         left: 0,
         zIndex: -1,

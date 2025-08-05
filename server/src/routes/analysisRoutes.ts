@@ -1,44 +1,61 @@
-import {Router, Request, Response} from 'express';
+
+import { Router } from 'express';
 import * as parser from '@babel/parser';
-import { buildSymbolTable } from '../symbolTable';
+import { Linter } from 'eslint';
 import { buildCallGraph } from '../callGraph';
-import { walkAST, Issue } from '../analyzers/astWalker';
-import { noConsoleLog } from '../analyzers/rules/noConsole';
 
 const router = Router();
+const linter = new Linter();
 
-router.post('/analyze', (req, res)=>{
-    const {code} = req.body;
-    if(!code){
-        return res.status(400).json({error: 'Code not provided'});
+router.post('/analyze', (req, res) => {
+    const { code } = req.body;
+    if (!code) {
+        return res.status(400).json({ error: 'Code not provided' });
     }
-    try{
-        const ast = parser.parse(code,{
-            sourceType: 'module',
+
+    let ast;
+    try {
+        ast = parser.parse(code, { 
+            sourceType: 'module', 
             plugins: ['jsx', 'typescript'],
-
         });
-        const symbolTable = buildSymbolTable(ast);
-        const unusedSymbols = symbolTable.getUnusedsymbols();
-        const issues = unusedSymbols.map(symbol=> ({
-            type:'warning',
-            message: `Unused symbol: '${symbol.name}' declared but never used.`,
-            line: symbol.declaration.line,
-            
-        }));
-        const callGraph = buildCallGraph(ast);
-        return res.json({
-            ast:ast,
-            issues: issues,
-            callGraph: callGraph,
-
+    } catch (error: any) {
+        return res.status(400).json({ 
+            issues: [{ 
+                type: 'Error', 
+                message: `Syntax Error: ${error.reasonCode || error.message}`, 
+                line: error.loc?.line || 0 
+            }] 
         });
-
+    }
     
-    }
-    catch(error: any){
-        return res.status(400).json({error: 'Failed to parse code', details: error.message});
-    }
+   
+    const lintingMessages = linter.verify(code, {
+        
+        languageOptions: {
+            ecmaVersion: 'latest',
+            sourceType: 'module'
+        },
+        rules: {
+            'no-undef': 'error',
+            'no-unreachable': 'error',
+            'no-unused-vars': 'warn',
+        }
+    });
+
+    const issues = lintingMessages.map(msg => ({
+        type: msg.severity === 2 ? 'Error' : 'Warning',
+        message: msg.message,
+        line: msg.line,
+    }));
+
+    const callGraph = buildCallGraph(ast);
+
+    return res.json({
+        ast: ast,
+        issues: issues,
+        callGraph: callGraph
+    });
 });
-    
+
 export default router;

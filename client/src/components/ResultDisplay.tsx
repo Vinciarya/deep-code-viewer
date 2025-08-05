@@ -38,10 +38,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
       {/* Issues Panel */}
       <div className="md:col-span-1 bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">
+        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6 ">
           Issues Detected ({analysis.issues.length})
         </h2>
         {analysis.issues.length > 0 ? (
@@ -62,7 +62,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
 
       {/* Call Graph Panel */}
       <div className="md:col-span-1 bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">
+        <h2 className="text-3xl font-semibold text-gray-800 border-b pb-4 mb-6  w-full">
           Call Graph
         </h2>
         <CallGraphView callGraphData={analysis.callGraph} />
